@@ -1,22 +1,25 @@
 // // console.log("Welcome to Project DX Compass");
 
-// leverage node's built-in module fs, this module let's JS interact with files and folders 
-const fs = require("fs");
-// leverage node's built-in module path, this module let's work with paths across OS's 
-const path = require("path");
-const validateProjectPath = require("./validation");
+// index is our entry to the project and coordinates everything
 
-// variable that holds the user's input for the project folder path
-const projectPath = process.argv[2];
+// loads functions from validation.js and github-api.js
+const validateRepoURL = require("./validation");
+const getReadme = require("./github-api");
 
-// validate the project path provided by the user
-validateProjectPath(projectPath);
+async function main() {
+    // accept argument from user 
+    const repoURL = process.argv[2];
 
-// find the README.md file in the project folder pathnode src/index.js .
-const readmePath = path.join(projectPath, "README.md");
+    // pass argument to validre the URL
+    const { owner, repo } = validateRepoURL(repoURL);
 
-if (fs.existsSync(readmePath)) {
-    console.log("✓ README exists");
-} else {
-    console.log("✗ README missing");
+    // now we get the README from GitHub API
+    const readme = await getReadme(owner, repo);
+
+    console.log(readme);
 }
+
+main().catch(error => {
+    console.error("✗", error.message);
+    process.exitCode = 1;
+});
