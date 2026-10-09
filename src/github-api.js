@@ -11,7 +11,11 @@ async function getReadme() {
     if (response.ok) {
         // response.json() converts JSON response into a javascript object
         const data = await response.json();
-        console.log(data);
+        console.log(data.html_url);
+        // html_url is the URL to the README file in the repository
+        // content is the contents of README, encoded in Base64 - node gas built-in tool, Buffer, can decode it
+        const readme = Buffer.from(data.content, "base64").toString("utf8");
+        console.log(readme);
     } else {
         console.error("Failed to fetch README");
     }
